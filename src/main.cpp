@@ -2,15 +2,15 @@
 #include <PubSubClient.h>
 #include <WiFi.h>
 
-#include <Optocoupler.h>
+#include <Optie.h>
 #include <Led.h>
 #include <Mqtt.h>
 
 #include <config.h>
 
-Optocoupler openOptocoupler(Config::Pin::Optocoupler::FullOpen);
-Optocoupler closeOptocoupler(Config::Pin::Optocoupler::FullClose);
-Optocoupler obstructionOptocoupler(Config::Pin::Optocoupler::ObstructionSensor);
+Optie openOptie(Config::Pin::Optie::FullOpen);
+Optie closeOptie(Config::Pin::Optie::FullClose);
+Optie obstructionOptie(Config::Pin::Optie::ObstructionSensor);
 
 Led openLed(Config::Pin::LED::Open);
 Led closeLed(Config::Pin::LED::Close);
@@ -26,9 +26,9 @@ void setupPins()
   closeLed.begin();
   stopLed.begin();
 
-  openOptocoupler.begin();
-  closeOptocoupler.begin();
-  obstructionOptocoupler.begin();
+  openOptie.begin();
+  closeOptie.begin();
+  obstructionOptie.begin();
 }
 
 void updateState(byte state, bool retained = true, bool force = false)
@@ -43,20 +43,20 @@ void updateState(byte state, bool retained = true, bool force = false)
 void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
 {
   Serial.print("[MQTT] Received ");
-  
+
   for (size_t i = 0; i < length; i++)
   {
     Serial.print("0x");
-    
+
     if (payload[i] < 0x10)
     {
       Serial.print("0");
     }
-    
+
     Serial.print(payload[i], HEX);
     Serial.print(" ");
   }
-  
+
   Serial.print(" on topic ");
   Serial.print(topic);
   Serial.println();
@@ -70,7 +70,7 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
 
     if (payload[0] == Config::MQTT::Payload::Target::Open)
     {
-      if (openOptocoupler.isActive())
+      if (openOptie.isActive())
       {
         updateState(Config::MQTT::Payload::State::Open);
       }
@@ -82,7 +82,7 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
     }
     else if (payload[0] == Config::MQTT::Payload::Target::Closed)
     {
-      if (closeOptocoupler.isActive())
+      if (closeOptie.isActive())
       {
         updateState(Config::MQTT::Payload::State::Closed);
       }
@@ -118,9 +118,9 @@ void setup()
 
 void loop()
 {
-  openOptocoupler.update();
-  closeOptocoupler.update();
-  obstructionOptocoupler.update();
+  openOptie.update();
+  closeOptie.update();
+  obstructionOptie.update();
 
   mqtt.update();
 
@@ -128,31 +128,31 @@ void loop()
   closeLed.update();
   stopLed.update();
 
-  if (openOptocoupler.activated())
+  if (openOptie.activated())
   {
     updateState(Config::MQTT::Payload::State::Open);
   }
 
-  if (openOptocoupler.deactivated())
+  if (openOptie.deactivated())
   {
     updateState(Config::MQTT::Payload::State::Closing);
   }
 
-  if (closeOptocoupler.activated())
+  if (closeOptie.activated())
   {
     updateState(Config::MQTT::Payload::State::Closed);
   }
 
-  if (closeOptocoupler.deactivated())
+  if (closeOptie.deactivated())
   {
     updateState(Config::MQTT::Payload::State::Opening);
   }
 
-  if (obstructionOptocoupler.changed())
+  if (obstructionOptie.changed())
   {
     mqtt.publishByte(
         Config::MQTT::Topic::Pub::Obstruction,
-        obstructionOptocoupler.isActive()
+        obstructionOptie.isActive()
             ? Config::MQTT::Payload::Obstruction::Obstructed
             : Config::MQTT::Payload::Obstruction::Unobstructed,
         true);

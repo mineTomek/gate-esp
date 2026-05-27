@@ -2,10 +2,10 @@
 
 #include <Arduino.h>
 
-class Optocoupler
+class Optie
 {
 public:
-    explicit Optocoupler(uint8_t pin);
+    explicit Optie(uint8_t pin);
 
     void begin();
     void update();

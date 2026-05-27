@@ -1,44 +1,44 @@
-#include <Optocoupler.h>
+#include <Optie.h>
 
-Optocoupler::Optocoupler(uint8_t pin)
+Optie::Optie(uint8_t pin)
     : pin(pin), currentState(HIGH), previousState(HIGH)
 {
 }
 
-void Optocoupler::begin()
+void Optie::begin()
 {
     pinMode(pin, INPUT_PULLUP);
     currentState = read();
     previousState = currentState;
 }
 
-void Optocoupler::update()
+void Optie::update()
 {
     previousState = currentState;
     currentState = read();
 }
 
-bool Optocoupler::activated() const
+bool Optie::activated() const
 {
     return previousState == HIGH && currentState == LOW;
 }
 
-bool Optocoupler::deactivated() const
+bool Optie::deactivated() const
 {
     return previousState == LOW && currentState == HIGH;
 }
 
-bool Optocoupler::changed() const
+bool Optie::changed() const
 {
     return previousState != currentState;
 }
 
-bool Optocoupler::isActive() const
+bool Optie::isActive() const
 {
     return currentState == LOW;
 }
 
-int Optocoupler::read() const
+int Optie::read() const
 {
     return digitalRead(pin);
 }
