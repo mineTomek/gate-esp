@@ -88,7 +88,7 @@ namespace Config
             constexpr byte Stop = 18; // ! MAKE SURE TO CHANGE
         }
 
-        namespace Button
+        namespace Optocoupler
         {
             constexpr byte FullOpen = 32;          // ! MAKE SURE TO CHANGE
             constexpr byte FullClose = 33;         // ! MAKE SURE TO CHANGE

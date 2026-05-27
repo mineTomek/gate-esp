@@ -2,15 +2,15 @@
 #include <PubSubClient.h>
 #include <WiFi.h>
 
-#include <Button.h>
+#include <Optocoupler.h>
 #include <Led.h>
 #include <Mqtt.h>
 
 #include <config.h>
 
-Button openButton(Config::Pin::Button::FullOpen);
-Button closeButton(Config::Pin::Button::FullClose);
-Button obstructionButton(Config::Pin::Button::ObstructionSensor);
+Optocoupler openOptocoupler(Config::Pin::Optocoupler::FullOpen);
+Optocoupler closeOptocoupler(Config::Pin::Optocoupler::FullClose);
+Optocoupler obstructionOptocoupler(Config::Pin::Optocoupler::ObstructionSensor);
 
 Led openLed(Config::Pin::LED::Open);
 Led closeLed(Config::Pin::LED::Close);
@@ -26,9 +26,9 @@ void setupPins()
   closeLed.begin();
   stopLed.begin();
 
-  openButton.begin();
-  closeButton.begin();
-  obstructionButton.begin();
+  openOptocoupler.begin();
+  closeOptocoupler.begin();
+  obstructionOptocoupler.begin();
 }
 
 void updateState(byte state, bool retained = true, bool force = false)
@@ -70,7 +70,7 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
 
     if (payload[0] == Config::MQTT::Payload::Target::Open)
     {
-      if (openButton.isDown())
+      if (openOptocoupler.isActive())
       {
         updateState(Config::MQTT::Payload::State::Open);
       }
@@ -82,7 +82,7 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
     }
     else if (payload[0] == Config::MQTT::Payload::Target::Closed)
     {
-      if (closeButton.isDown())
+      if (closeOptocoupler.isActive())
       {
         updateState(Config::MQTT::Payload::State::Closed);
       }
@@ -118,9 +118,9 @@ void setup()
 
 void loop()
 {
-  openButton.update();
-  closeButton.update();
-  obstructionButton.update();
+  openOptocoupler.update();
+  closeOptocoupler.update();
+  obstructionOptocoupler.update();
 
   mqtt.update();
 
@@ -128,31 +128,31 @@ void loop()
   closeLed.update();
   stopLed.update();
 
-  if (openButton.pressed())
+  if (openOptocoupler.activated())
   {
     updateState(Config::MQTT::Payload::State::Open);
   }
 
-  if (openButton.released())
+  if (openOptocoupler.deactivated())
   {
     updateState(Config::MQTT::Payload::State::Closing);
   }
 
-  if (closeButton.pressed())
+  if (closeOptocoupler.activated())
   {
     updateState(Config::MQTT::Payload::State::Closed);
   }
 
-  if (closeButton.released())
+  if (closeOptocoupler.deactivated())
   {
     updateState(Config::MQTT::Payload::State::Opening);
   }
 
-  if (obstructionButton.changed())
+  if (obstructionOptocoupler.changed())
   {
     mqtt.publishByte(
         Config::MQTT::Topic::Pub::Obstruction,
-        obstructionButton.isDown()
+        obstructionOptocoupler.isActive()
             ? Config::MQTT::Payload::Obstruction::Obstructed
             : Config::MQTT::Payload::Obstruction::Unobstructed,
         true);

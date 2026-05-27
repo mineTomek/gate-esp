@@ -1,44 +1,44 @@
-#include <Button.h>
+#include <Optocoupler.h>
 
-Button::Button(uint8_t pin)
+Optocoupler::Optocoupler(uint8_t pin)
     : pin(pin), currentState(HIGH), previousState(HIGH)
 {
 }
 
-void Button::begin()
+void Optocoupler::begin()
 {
     pinMode(pin, INPUT_PULLUP);
     currentState = read();
     previousState = currentState;
 }
 
-void Button::update()
+void Optocoupler::update()
 {
     previousState = currentState;
     currentState = read();
 }
 
-bool Button::pressed() const
+bool Optocoupler::activated() const
 {
     return previousState == HIGH && currentState == LOW;
 }
 
-bool Button::released() const
+bool Optocoupler::deactivated() const
 {
     return previousState == LOW && currentState == HIGH;
 }
 
-bool Button::changed() const
+bool Optocoupler::changed() const
 {
     return previousState != currentState;
 }
 
-bool Button::isDown() const
+bool Optocoupler::isActive() const
 {
     return currentState == LOW;
 }
 
-int Button::read() const
+int Optocoupler::read() const
 {
     return digitalRead(pin);
 }
