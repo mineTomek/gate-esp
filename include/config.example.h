@@ -81,7 +81,7 @@ namespace Config
 
     namespace Pin
     {
-        namespace LED
+        namespace Relay
         {
             constexpr byte Open = 4;  // ! MAKE SURE TO CHANGE
             constexpr byte Close = 5; // ! MAKE SURE TO CHANGE

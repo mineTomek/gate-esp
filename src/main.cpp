@@ -3,7 +3,7 @@
 #include <WiFi.h>
 
 #include <Optie.h>
-#include <Led.h>
+#include <Relay.h>
 #include <Mqtt.h>
 
 #include <config.h>
@@ -12,9 +12,9 @@ Optie openOptie(Config::Pin::Optie::FullOpen);
 Optie closeOptie(Config::Pin::Optie::FullClose);
 Optie obstructionOptie(Config::Pin::Optie::ObstructionSensor);
 
-Led openLed(Config::Pin::LED::Open);
-Led closeLed(Config::Pin::LED::Close);
-Led stopLed(Config::Pin::LED::Stop);
+Relay openRelay(Config::Pin::Relay::Open);
+Relay closeRelay(Config::Pin::Relay::Close);
+Relay stopRelay(Config::Pin::Relay::Stop);
 
 Mqtt mqtt;
 
@@ -22,9 +22,9 @@ byte localState = Config::MQTT::Payload::State::Unknown;
 
 void setupPins()
 {
-  openLed.begin();
-  closeLed.begin();
-  stopLed.begin();
+  openRelay.begin();
+  closeRelay.begin();
+  stopRelay.begin();
 
   openOptie.begin();
   closeOptie.begin();
@@ -76,7 +76,7 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
       }
       else
       {
-        openLed.blink(Config::RelayPulseDuration);
+        openRelay.pulse(Config::RelayPulseDuration);
         updateState(Config::MQTT::Payload::State::Opening);
       }
     }
@@ -88,7 +88,7 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
       }
       else
       {
-        closeLed.blink(Config::RelayPulseDuration);
+        closeRelay.pulse(Config::RelayPulseDuration);
         updateState(Config::MQTT::Payload::State::Closing);
       }
     }
@@ -98,7 +98,7 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
 
   if (strcmp(topic, Config::MQTT::Topic::Sub::Stop) == 0)
   {
-    stopLed.blink(Config::RelayPulseDuration);
+    stopRelay.pulse(Config::RelayPulseDuration);
     updateState(Config::MQTT::Payload::State::Stopped);
   }
 }
@@ -124,9 +124,9 @@ void loop()
 
   mqtt.update();
 
-  openLed.update();
-  closeLed.update();
-  stopLed.update();
+  openRelay.update();
+  closeRelay.update();
+  stopRelay.update();
 
   if (openOptie.activated())
   {
