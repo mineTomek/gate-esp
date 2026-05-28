@@ -76,6 +76,10 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
       }
       else
       {
+        openRelay.off();
+        closeRelay.off();
+        stopRelay.off();
+
         openRelay.pulse(Config::RelayPulseDuration);
         updateState(Config::MQTT::Payload::State::Opening);
       }
@@ -88,6 +92,10 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
       }
       else
       {
+        openRelay.off();
+        closeRelay.off();
+        stopRelay.off();
+
         closeRelay.pulse(Config::RelayPulseDuration);
         updateState(Config::MQTT::Payload::State::Closing);
       }
@@ -98,6 +106,10 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
 
   if (strcmp(topic, Config::MQTT::Topic::Sub::Stop) == 0)
   {
+    openRelay.off();
+    closeRelay.off();
+    stopRelay.off();
+    
     stopRelay.pulse(Config::RelayPulseDuration);
     updateState(Config::MQTT::Payload::State::Stopped);
   }
