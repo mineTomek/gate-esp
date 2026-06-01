@@ -35,6 +35,7 @@ namespace Config
             {
                 constexpr const char *Target = "gate/target/set";
                 constexpr const char *Stop = "gate/stop/trigger";
+                constexpr const char *UpdateAvailable = "gate/update/available";
             }
 
             namespace Pub
@@ -42,6 +43,7 @@ namespace Config
                 constexpr const char *State = "gate/current";
                 constexpr const char *Obstruction = "gate/obstruction";
                 constexpr const char *Availability = "gate/availability";
+                constexpr const char *UpdateStatus = "gate/update/status";
             }
         }
 
@@ -75,6 +77,16 @@ namespace Config
             {
                 constexpr const char *Offline = "offline";
                 constexpr const char *Online = "online";
+            }
+
+            namespace UpdateStatus
+            {
+                constexpr const byte Idle = 0x00;
+                constexpr const byte Scheduled = 0x01;
+                constexpr const byte Downloading = 0x02;
+                constexpr const byte Installing = 0x03;
+                constexpr const byte Success = 0x04;
+                constexpr const byte Failed = 0x05;
             }
         }
     }
