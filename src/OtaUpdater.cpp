@@ -6,9 +6,8 @@
 
 namespace UpdateStatus = Config::MQTT::Payload::UpdateStatus;
 
-OtaUpdater::OtaUpdater(WiFiClient &client)
-    : wifiClient(client),
-      status(UpdateStatus::Idle)
+OtaUpdater::OtaUpdater()
+    : status(UpdateStatus::Idle)
 {
 }
 

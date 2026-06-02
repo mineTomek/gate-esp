@@ -23,7 +23,8 @@ enum class OtaResult
 class OtaUpdater
 {
 public:
-    explicit OtaUpdater(WiFiClient &wifiClient);
+    explicit OtaUpdater();
+
     // ! Maybe move runtimeConfig to the ctor
     OtaResult start(const UpdateInfo &info, const RuntimeConfig &runtimeConfig);
 
@@ -35,6 +36,5 @@ private:
     OtaResult fail(OtaResult failResult);
 
     uint8_t status;
-    WiFiClient &wifiClient;
     HTTPClient client;
 };
