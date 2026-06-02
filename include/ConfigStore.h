@@ -18,6 +18,8 @@ struct RuntimeConfig
     String mqttUsername;
     String mqttPassword;
 
+    String githubPat;
+
     bool isValid() const
     {
         return wifiSsid.length() > 0 &&
@@ -42,7 +44,9 @@ public:
             .mqttHost = prefs.getString("mqtt_host", ""),
 
             .mqttUsername = prefs.getString("mqtt_user", ""),
-            .mqttPassword = prefs.getString("mqtt_pass", "")};
+            .mqttPassword = prefs.getString("mqtt_pass", ""),
+
+            .githubPat = prefs.getString("github_pat", "")};
 
         prefs.end();
         return config;
@@ -62,6 +66,8 @@ public:
 
         prefs.putString("mqtt_user", config.mqttUsername);
         prefs.putString("mqtt_pass", config.mqttPassword);
+
+        prefs.putString("github_pat", config.githubPat);
 
         prefs.end();
     }
@@ -91,6 +97,8 @@ public:
 
             .mqttUsername = Provisioning::MQTT::Username,
             .mqttPassword = Provisioning::MQTT::Password,
+
+            .githubPat = Provisioning::GitHub::PAT,
         };
 
         save(initialConfig);

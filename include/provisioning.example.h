@@ -19,4 +19,9 @@ namespace Provisioning
         constexpr const char *Username = "MQTT_USERNAME";
         constexpr const char *Password = "MQTT_PASSWORD";
     }
+
+    namespace GitHub
+    {
+        constexpr const char *PAT = "GITHUB_PAT";
+    }
 }
