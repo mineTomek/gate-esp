@@ -8,21 +8,10 @@ using byte = uint8_t;
 
 namespace Config
 {
-    namespace WiFi
-    {
-        constexpr const char *SSID = "WIFI_SSID";
-        constexpr const char *Password = "WIFI_PASSWORD";
-    }
-
     namespace MQTT
     {
-        constexpr const char *Address = "MQTT_ADDRESS";
+        constexpr const char *ClientID = "CLIENT_ID"; // ! MAKE SURE TO CHANGE
         constexpr uint16_t Port = 1883;
-
-        constexpr const char *ClientID = "CLIENT_ID";
-
-        constexpr const char *Username = "MQTT_USERNAME";
-        constexpr const char *Password = "MQTT_PASSWORD";
 
         namespace Topic
         {
