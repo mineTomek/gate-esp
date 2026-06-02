@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <ConfigStore.h>
 
 class Mqtt
 {
@@ -11,8 +12,8 @@ public:
 
     Mqtt();
 
-    void begin();
-    void update();
+    void begin(RuntimeConfig runtimeConfig);
+    void update(RuntimeConfig runtimeConfig);
 
     bool publish(const char *topic, const char *payload);
     bool publish(const char *topic, const char *payload, bool retained);
@@ -31,8 +32,8 @@ private:
 
     MessageHandler messageHandler;
 
-    void connectWifi();
-    void connectMqtt();
+    void connectWifi(RuntimeConfig runtimeConfig);
+    void connectMqtt(RuntimeConfig runtimeConfig);
 
     static Mqtt *instance;
     static void staticCallback(char *topic, uint8_t *payload, unsigned int length);

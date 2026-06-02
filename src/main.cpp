@@ -7,6 +7,7 @@
 #include <Mqtt.h>
 
 #include <config.h>
+#include <ConfigStore.h>
 
 Optie openOptie(Config::Pin::Optie::FullOpen);
 Optie closeOptie(Config::Pin::Optie::FullClose);
@@ -17,6 +18,9 @@ Relay closeRelay(Config::Pin::Relay::Close);
 Relay stopRelay(Config::Pin::Relay::Stop);
 
 Mqtt mqtt;
+
+ConfigStore configStore;
+RuntimeConfig runtimeConfig;
 
 byte localState = Config::MQTT::Payload::State::Unknown;
 
@@ -109,7 +113,7 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
     openRelay.off();
     closeRelay.off();
     stopRelay.off();
-    
+
     stopRelay.pulse(Config::RelayPulseDuration);
     updateState(Config::MQTT::Payload::State::Stopped);
   }
@@ -124,8 +128,21 @@ void setup()
 
   setupPins();
 
+  if (configStore.attemptProvision())
+  {
+    Serial.println("Provisioned");
+  }
+
+  runtimeConfig = configStore.load();
+
+  if (!runtimeConfig.isValid())
+  {
+    Serial.println("Missing runtime config!");
+    return;
+  }
+
   mqtt.setMessageHandler(handleMqttMessage);
-  mqtt.begin();
+  mqtt.begin(runtimeConfig);
 }
 
 void loop()
@@ -134,7 +151,7 @@ void loop()
   closeOptie.update();
   obstructionOptie.update();
 
-  mqtt.update();
+  mqtt.update(runtimeConfig);
 
   openRelay.update();
   closeRelay.update();

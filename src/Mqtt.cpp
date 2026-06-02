@@ -1,5 +1,6 @@
 #include <Mqtt.h>
 #include <config.h>
+#include <ConfigStore.h>
 
 Mqtt *Mqtt::instance = nullptr;
 
@@ -10,19 +11,19 @@ Mqtt::Mqtt()
     instance = this;
 }
 
-void Mqtt::begin()
+void Mqtt::begin(RuntimeConfig runtimeConfig)
 {
-    connectWifi();
+    connectWifi(runtimeConfig);
 
-    client.setServer(Config::MQTT::Address, Config::MQTT::Port);
+    client.setServer(runtimeConfig.mqttHost.c_str(), Config::MQTT::Port);
     client.setCallback(staticCallback);
 }
 
-void Mqtt::update()
+void Mqtt::update(RuntimeConfig runtimeConfig)
 {
     if (!client.connected())
     {
-        connectMqtt();
+        connectMqtt(runtimeConfig);
     }
 
     client.loop();
@@ -88,9 +89,9 @@ void Mqtt::setMessageHandler(MessageHandler handler)
     messageHandler = handler;
 }
 
-void Mqtt::connectWifi()
+void Mqtt::connectWifi(RuntimeConfig runtimeConfig)
 {
-    WiFi.begin(Config::WiFi::SSID, Config::WiFi::Password);
+    WiFi.begin(runtimeConfig.wifiSsid, runtimeConfig.wifiPassword);
 
     Serial.print("Connecting to Wi-Fi");
 
@@ -105,7 +106,7 @@ void Mqtt::connectWifi()
     Serial.println(WiFi.localIP());
 }
 
-void Mqtt::connectMqtt()
+void Mqtt::connectMqtt(RuntimeConfig runtimeConfig)
 {
     while (!client.connected())
     {
@@ -113,8 +114,8 @@ void Mqtt::connectMqtt()
 
         bool connectResult = client.connect(
             Config::MQTT::ClientID,
-            Config::MQTT::Username,
-            Config::MQTT::Password,
+            runtimeConfig.mqttUsername.c_str(),
+            runtimeConfig.mqttPassword.c_str(),
 
             // Will
             Config::MQTT::Topic::Pub::Availability,      // Topic
