@@ -70,6 +70,13 @@ OtaResult OtaUpdater::start(const UpdateInfo &info, const RuntimeConfig &runtime
         return fail(OtaResult::FailUpdate);
     }
 
+#ifdef OTA_DRY_RUN
+    Update.abort();
+    client.end();
+
+    setStatus(UpdateStatus::Success);
+    Serial.println("OTA dry run finished; update aborted intentionally.");
+#else
     if (!Update.end() || !Update.isFinished())
     {
         Update.printError(Serial);
@@ -84,6 +91,7 @@ OtaResult OtaUpdater::start(const UpdateInfo &info, const RuntimeConfig &runtime
     delay(500);
 
     ESP.restart();
+    #endif
 
     return OtaResult::Success;
 }
