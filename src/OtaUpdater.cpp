@@ -11,7 +11,6 @@ OtaUpdater::OtaUpdater()
 {
 }
 
-// TODO: In the future make this more async/work in loop()
 bool OtaUpdater::parseUpdateInfo(const uint8_t *payload, size_t size, UpdateInfo &out)
 {
     String msg;
