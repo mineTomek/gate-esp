@@ -9,6 +9,8 @@
 #include <config.h>
 #include <ConfigStore.h>
 
+#include <OtaUpdater.h>
+
 Optie openOptie(Config::Pin::Optie::FullOpen);
 Optie closeOptie(Config::Pin::Optie::FullClose);
 Optie obstructionOptie(Config::Pin::Optie::ObstructionSensor);
@@ -21,6 +23,8 @@ Mqtt mqtt;
 
 ConfigStore configStore;
 RuntimeConfig runtimeConfig;
+
+OtaUpdater otaUpdater;
 
 byte localState = Config::MQTT::Payload::State::Unknown;
 
@@ -117,6 +121,13 @@ void handleMqttMessage(const char *topic, const uint8_t *payload, size_t length)
     stopRelay.pulse(Config::RelayPulseDuration);
     updateState(Config::MQTT::Payload::State::Stopped);
   }
+
+  // * Update Topic
+
+  if (strcmp(topic, Config::MQTT::Topic::Sub::UpdateAvailable) == 0)
+  {
+    otaUpdater.schedule(payload, length);
+  }
 }
 
 void setup()
@@ -191,4 +202,6 @@ void loop()
       updateState(Config::MQTT::Payload::State::Opening);
     }
   }
+
+  otaUpdater.loop(localState, runtimeConfig);
 }
