@@ -21,7 +21,8 @@ OtaResult OtaUpdater::start(const UpdateInfo &info, const RuntimeConfig &runtime
 
     setStatus(UpdateStatus::Downloading);
 
-    if (!client.begin(info.url)) {
+    if (!client.begin(info.url))
+    {
         return fail(OtaResult::FailHTTP);
     }
 
@@ -65,7 +66,8 @@ OtaResult OtaUpdater::start(const UpdateInfo &info, const RuntimeConfig &runtime
 
     size_t written = Update.writeStream(stream);
 
-    if (written != static_cast<size_t>(size)) {
+    if (written != static_cast<size_t>(size))
+    {
         Update.printError(Serial);
         return fail(OtaResult::FailUpdate);
     }
@@ -91,7 +93,7 @@ OtaResult OtaUpdater::start(const UpdateInfo &info, const RuntimeConfig &runtime
     delay(500);
 
     ESP.restart();
-    #endif
+#endif
 
     return OtaResult::Success;
 }
