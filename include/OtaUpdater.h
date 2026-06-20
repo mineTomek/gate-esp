@@ -35,6 +35,8 @@ private:
     void setStatus(uint8_t newStatus);
     OtaResult fail(OtaResult failResult);
 
+    bool isGateSafeForUpdate(uint8_t gateState);
+
     uint8_t status;
     HTTPClient client;
 };

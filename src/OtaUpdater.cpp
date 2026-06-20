@@ -122,3 +122,9 @@ bool OtaUpdater::isUpdating() const
            status == UpdateStatus::Downloading ||
            status == UpdateStatus::Installing;
 }
+
+bool OtaUpdater::isGateSafeForUpdate(uint8_t gateState)
+{
+    return gateState == Config::MQTT::Payload::State::Closed ||
+           gateState == Config::MQTT::Payload::State::Open;
+}
