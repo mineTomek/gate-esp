@@ -119,9 +119,16 @@ OtaResult OtaUpdater::start(const UpdateInfo &info, const RuntimeConfig &runtime
         return fail(OtaResult::FailHTTP);
     }
 
-    int size = client.getSize();
+    int httpSize = client.getSize();
 
-    if (size <= 0 || size != info.size)
+    if (httpSize <= 0)
+    {
+        return fail(OtaResult::FailSize);
+    }
+
+    size_t size = static_cast<size_t>(httpSize);
+
+    if (size != info.size)
     {
         return fail(OtaResult::FailSize);
     }
