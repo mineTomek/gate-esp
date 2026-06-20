@@ -25,13 +25,13 @@ class OtaUpdater
 public:
     explicit OtaUpdater();
 
-    // ! Maybe move runtimeConfig to the ctor
-    OtaResult start(const UpdateInfo &info, const RuntimeConfig &runtimeConfig);
-
     uint8_t getStatus() const;
     bool isUpdating() const;
 
 private:
+    // ! Maybe move runtimeConfig to the ctor
+    OtaResult start(const UpdateInfo &info, const RuntimeConfig &runtimeConfig);
+
     bool parseUpdateInfo(const uint8_t *payload, size_t length, UpdateInfo &out);
 
     void setStatus(uint8_t newStatus);
