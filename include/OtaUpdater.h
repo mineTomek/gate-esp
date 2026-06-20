@@ -32,6 +32,8 @@ public:
     bool isUpdating() const;
 
 private:
+    bool parseUpdateInfo(const uint8_t *payload, size_t length, UpdateInfo &out);
+
     void setStatus(uint8_t newStatus);
     OtaResult fail(OtaResult failResult);
 

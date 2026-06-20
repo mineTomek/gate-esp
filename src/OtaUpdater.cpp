@@ -12,6 +12,86 @@ OtaUpdater::OtaUpdater()
 }
 
 // TODO: In the future make this more async/work in loop()
+bool OtaUpdater::parseUpdateInfo(const uint8_t *payload, size_t size, UpdateInfo &out)
+{
+    String msg;
+    msg.reserve(size);
+
+    for (size_t i = 0; i < size; i++)
+    {
+        msg += static_cast<char>(payload[i]);
+    }
+
+    msg.trim();
+
+    int firstNl = msg.indexOf('\n');
+
+    if (firstNl < 0)
+        return false;
+
+    int secondNl = msg.indexOf('\n', firstNl + 1);
+
+    if (secondNl < 0)
+        return false;
+
+    // * URL
+
+    String url = msg.substring(0, firstNl);
+
+    url.trim();
+
+    if (!url.startsWith("https://"))
+        return false;
+
+    // * SHA-256
+
+    String sha256 = msg.substring(firstNl + 1, secondNl);
+
+    sha256.trim();
+
+    if (sha256.length() != 64)
+        return false;
+
+    for (char c : sha256)
+    {
+        bool isHex =
+            (c >= '0' && c <= '9') ||
+            (c >= 'a' && c <= 'f') ||
+            (c >= 'A' && c <= 'F');
+
+        if (!isHex)
+            return false;
+    }
+
+    // * Size
+
+    String sizeStr = msg.substring(secondNl + 1);
+
+    sizeStr.trim();
+
+    if (sizeStr.length() == 0)
+        return false;
+
+    for (char c : sizeStr)
+    {
+        bool isDigit = c >= '0' && c <= '9';
+
+        if (!isDigit)
+            return false;
+    }
+
+    size_t firmwareSize = static_cast<size_t>(sizeStr.toInt());
+
+    if (firmwareSize == 0)
+        return false;
+
+    out.url = url;
+    out.sha256 = sha256;
+    out.size = firmwareSize;
+
+    return true;
+}
+
 OtaResult OtaUpdater::start(const UpdateInfo &info, const RuntimeConfig &runtimeConfig)
 {
     if (isUpdating())
