@@ -11,6 +11,26 @@ OtaUpdater::OtaUpdater()
 {
 }
 
+bool OtaUpdater::schedule(const uint8_t *payload, size_t length)
+{
+    UpdateInfo parsed;
+
+    if (!parseUpdateInfo(payload, length, parsed))
+    {
+        return false;
+    }
+
+    // * Newest pushed update wins over
+    // * already scheduled updates
+
+    scheduledUpdate = parsed;
+    isUpdateScheduled = true;
+
+    setStatus(UpdateStatus::Scheduled);
+
+    return true;
+}
+
 bool OtaUpdater::parseUpdateInfo(const uint8_t *payload, size_t size, UpdateInfo &out)
 {
     String msg;
@@ -89,6 +109,23 @@ bool OtaUpdater::parseUpdateInfo(const uint8_t *payload, size_t size, UpdateInfo
     out.size = firmwareSize;
 
     return true;
+}
+
+OtaResult OtaUpdater::loop(uint8_t currentGateState, const RuntimeConfig &runtimeConfig)
+{
+    if (!isUpdateScheduled)
+    {
+        return OtaResult::NoAction;
+    }
+
+    if (!isGateSafeForUpdate(currentGateState))
+    {
+        return OtaResult::InvalidGateState;
+    }
+
+    isUpdateScheduled = false;
+
+    return start(scheduledUpdate, runtimeConfig);
 }
 
 OtaResult OtaUpdater::start(const UpdateInfo &info, const RuntimeConfig &runtimeConfig)

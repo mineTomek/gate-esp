@@ -12,8 +12,13 @@ struct UpdateInfo
 
 enum class OtaResult
 {
+    NoAction,
+    InvalidGateState,
+
     AlreadyUpdating,
+
     Success,
+
     FailHTTP,
     FailSize,
     FailFirstByte,
@@ -24,6 +29,9 @@ class OtaUpdater
 {
 public:
     explicit OtaUpdater();
+
+    bool schedule(const uint8_t *payload, size_t length);
+    OtaResult loop(uint8_t currentGateState, const RuntimeConfig &runtimeConfig);
 
     uint8_t getStatus() const;
     bool isUpdating() const;
@@ -41,4 +49,7 @@ private:
 
     uint8_t status;
     HTTPClient client;
+
+    bool isUpdateScheduled = false;
+    UpdateInfo scheduledUpdate;
 };
